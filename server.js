@@ -1,8 +1,11 @@
 var Hapi = require('hapi');
 var Inert = require('inert');
 var Vision = require('vision');
+var Uuid = require('uuid');
 
 var server = new Hapi.Server();
+
+var cards = {};
 
 server.connection({port:8000});
 
@@ -47,16 +50,44 @@ server.route({
 	handler: cardsHandler
 });
 
+server.route({
+	path: '/cards/{id}',
+	method: 'DELETE',
+	handler: deleteCardHandler
+});
+
 function newCardHandler(request, reply) {
 	if(request.method === 'get') {
 		reply.file('templates/new.html');
 	} else {
+		var card = {
+			name: request.payload.name,
+			recipient_email: request.payload.recipient_email,
+			sender_name: request.payload.sender_name,
+			sender_email: request.payload.sender_email,
+			card_image: request.payload.card_image
+		};
+
+		saveCard(card);
+
+		console.log(cards);
+
 		reply.redirect('/cards');
 	}
 }
 
+function deleteCardHandler(request, reply) {
+	delete cards[request.params.id];
+}
+
 function cardsHandler(request, reply) {
 	reply.file('templates/cards.html');
+}
+
+function saveCard(card) {
+	var id = Uuid.v1();
+	card.id = id;
+	cards[id] = card;
 }
 
 server.start(function() {
