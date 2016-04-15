@@ -13,6 +13,13 @@ server.register([Vision, Inert], function (err) {
      if (err) console.log(err);
  });
 
+server.views({
+	engines: {
+		html: require('handlebars')
+	},
+	path: './templates'
+});
+
 server.ext('onRequest', function(request, reply) {
 	console.log('Request received: ' + request.path);
 	reply.continue(); //To continue request lifecycle and hand back control to server.
@@ -40,8 +47,7 @@ server.route({
 server.route({
 	path: '/cards/new',
 	method: ['GET', 'POST'],
-	handler:  newCardHandler
-		
+	handler:  newCardHandler	
 });
 
 server.route({
@@ -58,7 +64,7 @@ server.route({
 
 function newCardHandler(request, reply) {
 	if(request.method === 'get') {
-		reply.file('templates/new.html');
+		reply.view('new');
 	} else {
 		var card = {
 			name: request.payload.name,
