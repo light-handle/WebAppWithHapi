@@ -85,10 +85,12 @@ function newCardHandler(request, reply) {
 
 function deleteCardHandler(request, reply) {
 	delete cards[request.params.id];
+	reply();
 }
 
 function cardsHandler(request, reply) {
-	reply.file('templates/cards.html');
+	//reply.file('templates/cards.html');
+	reply.view('cards', {cards: cards} );
 }
 
 function saveCard(card) {
