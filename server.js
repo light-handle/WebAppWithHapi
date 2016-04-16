@@ -2,10 +2,11 @@ var Hapi = require('hapi');
 var Inert = require('inert');
 var Vision = require('vision');
 var Uuid = require('uuid');
+var Fs = require('fs');
 
 var server = new Hapi.Server();
 
-var cards = {};
+var cards = loadCards();
 
 server.connection({port:8000});
 
@@ -94,6 +95,11 @@ function saveCard(card) {
 	var id = Uuid.v1();
 	card.id = id;
 	cards[id] = card;
+}
+
+function loadCards() {
+	var file = Fs.readFileSync('./cards.json');
+	return JSON.parse(file.toString());
 }
 
 server.start(function() {
