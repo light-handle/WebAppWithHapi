@@ -28,6 +28,13 @@ server.ext('onRequest', function(request, reply) {
 	reply.continue(); //To continue request lifecycle and hand back control to server.
 });
 
+server.ext('onPreResponse', function(request, reply) {
+	if(request.response.isBoom) {
+		return reply.view('error', request.response);
+	}
+	reply.continue();
+});
+
 server.route({
 	path: '/',
 	method: 'GET',
@@ -79,6 +86,7 @@ function newCardHandler(request, reply) {
 	} else {
 		Joi.validate(request.payload, cardSchema, function(err, val) {
 			if(err) {
+				// console.log('Error: ' + err.details[0].message);
 				return reply(Boom.badRequest(err.details[0].message));
 			}
 			var card = {
