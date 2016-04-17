@@ -65,7 +65,7 @@ server.route({
 
 function newCardHandler(request, reply) {
 	if(request.method === 'get') {
-		reply.view('new');
+		reply.view('new', { card_images: mapImages() });
 	} else {
 		var card = {
 			name: request.payload.name,
@@ -102,6 +102,10 @@ function saveCard(card) {
 function loadCards() {
 	var file = Fs.readFileSync('./cards.json');
 	return JSON.parse(file.toString());
+}
+
+function mapImages() {
+	return Fs.readdirSync(('./public/images/cards'));
 }
 
 server.start(function() {
