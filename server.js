@@ -79,7 +79,7 @@ function newCardHandler(request, reply) {
 	} else {
 		Joi.validate(request.payload, cardSchema, function(err, val) {
 			if(err) {
-				return reply(err);
+				return reply(Boom.badRequest(err.details[0].message));
 			}
 			var card = {
 				name: val.name,
