@@ -23,9 +23,42 @@ server.views({
 	path: './templates'
 });
 
-server.ext('onRequest', function(request, reply) {
-	console.log('Request received: ' + request.path);
-	reply.continue(); //To continue request lifecycle and hand back control to server.
+server.register( {  // Register plugins
+	register: require('good'),
+	options: {             // To configure plugin
+		opsInterval: 5000,
+		reporters: [
+			{
+				reporter: require('good-file'),
+				events: { ops: '*' },
+				config: {
+					path: './logs',
+					prefix: 'hapi-process',
+					rotate: 'daily'
+				}
+			},
+			{
+				reporter: require('good-file'),
+				events: { response: '*' },
+				config: {
+					path: './logs',
+					prefix: 'hapi-request',
+					rotate: 'daily'
+				}
+			},
+			{
+				reporter: require('good-file'),
+				events: { error: '*' },
+				config: {
+					path: './logs',
+					prefix: 'hapi-error',
+					rotate: 'daily'
+				}
+			}
+		]
+	}
+}, function(err) {
+	console.log(err);
 });
 
 server.ext('onPreResponse', function(request, reply) {
