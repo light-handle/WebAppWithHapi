@@ -3,6 +3,8 @@ var Inert = require('inert');
 var Vision = require('vision');
 var Uuid = require('uuid');
 var Fs = require('fs');
+var Joi = require('joi');
+var Boom = require('boom');
 
 var server = new Hapi.Server();
 
@@ -63,23 +65,33 @@ server.route({
 	handler: deleteCardHandler
 });
 
+var cardSchema = Joi.object().keys({
+	name: Joi.string().min(3).max(50).required(),
+	recipient_email: Joi.string().email().required(),
+	sender_name: Joi.string().min(3).max(50).required(),
+	sender_email: Joi.string().email().required(),
+	card_image: Joi.string().regex(/.+\.(jpg|bmp|png|gif)\b/).required()
+});
+
 function newCardHandler(request, reply) {
 	if(request.method === 'get') {
 		reply.view('new', { card_images: mapImages() });
 	} else {
-		var card = {
-			name: request.payload.name,
-			recipient_email: request.payload.recipient_email,
-			sender_name: request.payload.sender_name,
-			sender_email: request.payload.sender_email,
-			card_image: request.payload.card_image
-		};
-
-		saveCard(card);
-
-		console.log(cards);
-
-		reply.redirect('/cards');
+		Joi.validate(request.payload, cardSchema, function(err, val) {
+			if(err) {
+				return reply(err);
+			}
+			var card = {
+				name: val.name,
+				recipient_email: val.recipient_email,
+				sender_name: val.sender_name,
+				sender_email: val.sender_email,
+				card_image: val.card_image
+			};
+			saveCard(card);
+			// console.log(cards);
+			reply.redirect('/cards');
+		});		
 	}
 }
 
