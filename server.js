@@ -58,6 +58,16 @@ server.register( {  // Register plugins
 	console.log(err);
 });
 
+server.register(require('hapi-auth-cookie'), function(err) {
+ 	if(err) console.log(err);
+
+ 	server.auth.strategy('default', 'cookie', {
+ 		password: 'mypassword',
+ 		redirectTo: '/login',
+ 		isSecure: false
+ 	});
+});
+
 server.ext('onPreResponse', function(request, reply) {
 	if(request.response.isBoom) {
 		return reply.view('error', request.response);
