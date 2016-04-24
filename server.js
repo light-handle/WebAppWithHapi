@@ -2,10 +2,12 @@ var Hapi = require('hapi');
 var Inert = require('inert');
 var Vision = require('vision');
 var CardStore = require('./lib/cardStore');
+var UserStore = requier('./lib/userStore');
 
 var server = new Hapi.Server();
 
 CardStore.initialize();
+UserStore.initialize();
 
 server.connection({port:8000});
 
@@ -66,6 +68,8 @@ server.register(require('hapi-auth-cookie'), function(err) {
  		redirectTo: '/login',
  		isSecure: false
  	});
+
+ 	server.auth.default('default');
 });
 
 server.ext('onPreResponse', function(request, reply) {
