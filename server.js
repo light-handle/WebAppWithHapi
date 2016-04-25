@@ -2,7 +2,7 @@ var Hapi = require('hapi');
 var Inert = require('inert');
 var Vision = require('vision');
 var CardStore = require('./lib/cardStore');
-var UserStore = requier('./lib/userStore');
+var UserStore = require('./lib/userStore');
 
 var server = new Hapi.Server();
 
